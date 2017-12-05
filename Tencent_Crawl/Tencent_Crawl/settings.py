@@ -19,7 +19,12 @@ NEWSPIDER_MODULE = 'Tencent_Crawl.spiders'
 #USER_AGENT = 'Tencent_Crawl (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False #遵守爬虫约定规则
+DOWNLOAD_TIMEOUT=5 #超时时间
+DNSCACHE_ENABLED=True #dns库调用好像，开起来好一点
+
+COOKIES_ENABLED = False
+CONCURRENT_REQUESTS=16 #同时并发的request量
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -27,7 +32,7 @@ ROBOTSTXT_OBEY = True
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -52,9 +57,24 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'Tencent_Crawl.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    #'Tencent_Crawl.middlewares.MyCustomDownloaderMiddleware': 543,
+    'Tencent_Crawl.middlewares.Proxy_Middleware': 100,
+    'Tencent_Crawl.middlewares.Usage_Middleware': 400,
+    'Tencent_Crawl.middlewares.Timeout_Middleware': 610,
+    'scrapy.downloadermiddleware.useragent.UserAgentMiddleware': None,
+    'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': None,
+    'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': 400,
+    'Tencent_Crawl.middlewares.Redirect_Middleware': 500, #重定向中间件
+}
+
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+SCHEDULER_PERSIST = True
+SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.SpiderPriorityQueue'
+REDIS_URL = None
+REDIS_HOST = '127.0.0.1' # 也可以根据情况改成 localhost
+REDIS_PORT = '6379'
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -64,9 +84,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'Tencent_Crawl.pipelines.TencentCrawlPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'Tencent_Crawl.pipelines.TencentCrawlPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
